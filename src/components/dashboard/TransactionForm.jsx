@@ -1,6 +1,8 @@
 
 "use client";
 
+import { useEffect, useRef } from "react";
+
 export default function TransactionForm({
     formData,
     setFormData,
@@ -11,6 +13,9 @@ export default function TransactionForm({
     onCancel,
     descriptions,
 }) {
+
+    const formRef = useRef(null);
+
     function handleChange(event) {
         const { name, value } = event.target;
 
@@ -20,8 +25,33 @@ export default function TransactionForm({
         }));
     }
 
+    useEffect(() => {
+        function handleKeyDown(event) {
+            if (
+                event.altKey &&
+                event.key.toLowerCase() === "g" &&
+                !event.repeat &&
+                !saving
+            ) {
+                event.preventDefault();
+
+                formRef.current?.requestSubmit();
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [saving]);
+
     return (
-        <form className="d-flex fd-col g-0_5rem" onSubmit={onSubmit}>
+        <form
+            ref={formRef}
+            className="d-flex fd-col g-0_5rem"
+            onSubmit={onSubmit}
+        >
             <p className="fw-bold fc-green-logo td-under">
                 {editingId ? "EDITAR MOVIMIENTO" : "NUEVO MOVIMIENTO"}
             </p>
@@ -33,14 +63,14 @@ export default function TransactionForm({
                 <select
                     id="description"
                     name="description"
-                   value={
-    formData.description === ""
-        ? ""
-        : formData.description === "Otro" ||
-            !descriptions.includes(formData.description)
-            ? "Otro"
-            : formData.description
-}
+                    value={
+                        formData.description === ""
+                            ? ""
+                            : formData.description === "Otro" ||
+                                !descriptions.includes(formData.description)
+                                ? "Otro"
+                                : formData.description
+                    }
                     onChange={(event) => {
                         const value = event.target.value;
 

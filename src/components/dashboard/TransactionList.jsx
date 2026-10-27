@@ -69,8 +69,6 @@ export default function TransactionList({
         <div className="d-flex fd-col g-1rem">
 
             <div className="d-flex fd-col g-0_5rem">
-
-
                 <div className="d-flex fd-row ai-center jc-between g-1rem">
                     <label htmlFor="endMonth">Hasta:</label>
 

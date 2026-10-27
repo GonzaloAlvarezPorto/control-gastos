@@ -63,6 +63,21 @@ export default function DashboardPage() {
         }
     }, [showForm, editingId]);
 
+    useEffect(() => {
+        function handleKeyDown(event) {
+            if (event.altKey && event.key.toLowerCase() === "n") {
+                event.preventDefault();
+                openNewForm();
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [openNewForm]);
+
     async function handleDelete(transaction) {
         const confirmed = window.confirm(
             `¿Querés eliminar el movimiento "${transaction.description}"?`
