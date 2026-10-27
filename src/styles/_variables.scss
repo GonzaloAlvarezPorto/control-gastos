@@ -1,0 +1,43 @@
+// Colores
+
+$color-primary: null !default;
+$color-secondary: null !default;
+$color-accent: null !default;
+
+$color-bg-main: null !default;
+$color-bg-alt: null !default;
+
+$color-text-main: null !default;
+$color-text-muted: null !default;
+
+// No es recomendable clases para cada color cuando
+// tenga que usar colores es mejor usar un componente y
+// ahí llamar a la variable
+
+$green-logo: rgb(3, 250, 110);
+
+$green-excel: rgb(16, 121, 63);
+
+$dark-red: rgb(68, 16, 16);
+
+$bgc-btn: rgb(201, 201, 201);
+
+.fc-green-logo {
+    color: $green-logo;
+}
+
+.fc-white {
+    color: white;
+}
+
+.fc-red{
+    color: rgb(220, 79, 79);
+}
+
+.bgc-green-excel{
+    background-color: $green-excel;
+}
+
+.bgc-dark-red{
+    background-color: $dark-red;
+}

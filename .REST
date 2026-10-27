@@ -1,0 +1,73 @@
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "gonzaalvarezporto@gmail.com",
+    "password": "3498mate"
+}
+
+
+### Probar acceso sin sesión
+GET http://localhost:3000/api/protected
+
+### Probar login
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "gonzaalvarezporto@gmail.com",
+    "password": "3498mate"
+}
+
+
+### Probar acceso con sesión
+GET http://localhost:3000/api/protected
+
+### Cerrar sesión
+POST http://localhost:3000/api/auth/logout
+
+### Comprobar acceso sin sesión
+GET http://localhost:3000/api/protected
+
+
+###
+POST http://localhost:3000/api/transactions
+Content-Type: application/json
+
+{
+    "description": "Factura de luz",
+    "type": "expense",
+    "amount": 10000,
+    "category": "Impuestos",
+    "paymentMethod": "Electrónico",
+    "dueDate": "2026-10-19"
+}
+
+
+###
+GET http://localhost:3000/api/transactions
+
+###
+PATCH http://localhost:3000/api/transactions/6ad62db5f71221245c481c58
+Content-Type: application/json
+
+{
+    "transactionDate": "2026-10-19"
+}
+
+###
+POST http://localhost:3000/api/transactions
+Content-Type: application/json
+
+{
+    "transactionDate": "2026-11-01",
+    "description": "Otro ingreso",
+    "type": "income",
+    "amount": 35000,
+    "category": "Otros",
+    "paymentMethod": "Electrónico"
+}
+
+
+### Eliminar movimiento
+DELETE http://localhost:3000/api/transactions/6ad62aadf71221245c481c52
