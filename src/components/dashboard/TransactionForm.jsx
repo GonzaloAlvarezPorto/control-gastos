@@ -9,6 +9,7 @@ export default function TransactionForm({
     formError,
     onSubmit,
     onCancel,
+    descriptions,
 }) {
     function handleChange(event) {
         const { name, value } = event.target;
@@ -29,15 +30,63 @@ export default function TransactionForm({
 
             <div className="d-flex fd-row w-100 jc-between ai-center">
                 <label htmlFor="description">Descripción</label>
-                <input
+                <select
                     id="description"
                     name="description"
-                    type="text"
-                    value={formData.description}
-                    onChange={handleChange}
+                   value={
+    formData.description === ""
+        ? ""
+        : formData.description === "Otro" ||
+            !descriptions.includes(formData.description)
+            ? "Otro"
+            : formData.description
+}
+                    onChange={(event) => {
+                        const value = event.target.value;
+
+                        setFormData((current) => ({
+                            ...current,
+                            description: value === "Otro" ? "Otro" : value,
+                            customDescription: "",
+                        }));
+                    }}
                     required
-                />
+                >
+                    <option value="">Seleccionar descripción</option>
+
+                    {descriptions.map((description) => (
+                        <option key={description} value={description}>
+                            {description}
+                        </option>
+                    ))}
+
+                    <option value="Otro">Otro</option>
+                </select>
             </div>
+
+            {(
+                formData.description === "Otro" ||
+                !descriptions.includes(formData.description)
+            ) && (
+                    <div className="d-flex fd-row w-100 jc-between ai-center">
+                        <label htmlFor="customDescription">
+                            Nueva descripción
+                        </label>
+                        <input
+                            id="customDescription"
+                            name="customDescription"
+                            type="text"
+                            value={formData.customDescription || ""}
+                            onChange={(event) =>
+                                setFormData((current) => ({
+                                    ...current,
+                                    customDescription: event.target.value,
+                                }))
+                            }
+                            required
+                        />
+                    </div>
+                )}
 
             <div className="d-flex fd-row w-100 jc-between ai-center">
                 <label htmlFor="type">Tipo</label>

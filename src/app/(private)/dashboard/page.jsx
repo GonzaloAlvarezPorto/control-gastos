@@ -46,6 +46,14 @@ export default function DashboardPage() {
         setError,
     });
 
+    const descriptions = [
+        ...new Set(
+            transactions
+                .map((transaction) => transaction.description?.trim())
+                .filter(Boolean)
+        ),
+    ].sort((a, b) => a.localeCompare(b, "es"));
+
     useEffect(() => {
         if (showForm && editingId) {
             formRef.current?.scrollIntoView({
@@ -155,6 +163,7 @@ export default function DashboardPage() {
                             formError={formError}
                             onSubmit={handleSubmit}
                             onCancel={handleCancelForm}
+                            descriptions={descriptions}
                         />
                     </div>
                 )}

@@ -12,6 +12,7 @@ const INITIAL_FORM_DATA = {
     category: "Comida",
     paymentMethod: "Electrónico",
     customPaymentMethod: "",
+    customDescription: "",
 };
 
 const STANDARD_PAYMENT_METHODS = [
@@ -65,6 +66,7 @@ export default function useTransactionForm({
             customPaymentMethod: isStandardPaymentMethod
                 ? ""
                 : transaction.paymentMethod || "",
+            customDescription: "",
         });
 
         setFormError("");
@@ -85,7 +87,12 @@ export default function useTransactionForm({
                     ? formData.customPaymentMethod.trim()
                     : formData.paymentMethod;
 
-            if (!formData.description.trim()) {
+            const description =
+                formData.description === "Otro"
+                    ? formData.customDescription.trim()
+                    : formData.description.trim();
+
+            if (!description) {
                 throw new Error("Ingresá una descripción.");
             }
 
@@ -98,7 +105,7 @@ export default function useTransactionForm({
             }
 
             const payload = {
-                description: formData.description.trim(),
+                description,
                 type: formData.type,
                 amount: Number(formData.amount),
                 transactionDate: formData.transactionDate || null,
