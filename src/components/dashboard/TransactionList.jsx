@@ -200,8 +200,10 @@ export default function TransactionList({
                                     -{formatAmount(transaction.amount)}
                                 </p>
                             )}
+                        </div>
 
-                            <p>{transaction.category}</p>
+                        <div className="d-flex fd-col g-0_5rem jc-center">
+                            <p className="fw-bold fc-bgc-btn">{transaction.category}</p>
                         </div>
 
                         <div className="d-flex fd-col g-0_5rem jc-center">
