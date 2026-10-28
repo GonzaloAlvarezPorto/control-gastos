@@ -2,9 +2,9 @@
 import Transaction from "@/models/Transaction";
 
 export async function recalculateAccountBalances(userId) {
-    const transactions = await Transaction.find({ userId }).sort({
-        createdAt: 1,
-    });
+    const transactions = await Transaction.find({ userId })
+        .sort({ createdAt: 1 })
+        .lean();
 
     // Los movimientos con fecha van primero, ordenados cronológicamente.
     // Los que no tienen fecha quedan al final.
@@ -25,14 +25,17 @@ export async function recalculateAccountBalances(userId) {
     });
 
     let balance = 0;
+    const operations = [];
 
     for (const transaction of transactions) {
-        if (!transaction.transactionDate) {
-            transaction.status = "pending";
-            transaction.accountBalance = balance;
-        } else {
-            transaction.status = "completed";
+        let status;
 
+        if (!transaction.transactionDate) {
+            status = "pending";
+        } else {
+            status = "completed";
+
+            // Solo los movimientos electrónicos modifican el saldo.
             if (transaction.paymentMethod === "Electrónico") {
                 if (transaction.type === "income") {
                     balance += transaction.amount;
@@ -40,13 +43,26 @@ export async function recalculateAccountBalances(userId) {
                     balance -= transaction.amount;
                 }
             }
-
-            // Los movimientos de efectivo u otros medios
-            // conservan el saldo bancario sin modificarlo.
-            transaction.accountBalance = balance;
         }
 
-        await transaction.save();
+        operations.push({
+            updateOne: {
+                filter: {
+                    _id: transaction._id,
+                    userId,
+                },
+                update: {
+                    $set: {
+                        status,
+                        accountBalance: balance,
+                    },
+                },
+            },
+        });
+    }
+
+    if (operations.length > 0) {
+        await Transaction.bulkWrite(operations);
     }
 
     return balance;
