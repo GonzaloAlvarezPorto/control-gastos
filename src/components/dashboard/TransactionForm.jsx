@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TransactionForm({
     formData,
@@ -15,6 +15,20 @@ export default function TransactionForm({
 }) {
 
     const formRef = useRef(null);
+
+    const currentYear = new Date().getFullYear();
+
+    const [selectedYear, setSelectedYear] = useState(
+        formData.transactionDate
+            ? Number(formData.transactionDate.slice(0, 4))
+            : 2026
+    );
+
+    const [dueYear, setDueYear] = useState(
+        formData.dueDate
+            ? Number(formData.dueDate.slice(0, 4))
+            : 2026
+    );
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -146,29 +160,180 @@ export default function TransactionForm({
                 />
             </div>
 
-            <div className="d-flex fd-row w-100 jc-between ai-center">
-                <label htmlFor="transactionDate">
-                    Fecha del movimiento
-                </label>
-                <input
-                    id="transactionDate"
-                    name="transactionDate"
-                    type="date"
-                    value={formData.transactionDate}
-                    onChange={handleChange}
-                />
-            </div>
 
             <div className="d-flex fd-row w-100 jc-between ai-center">
-                <label htmlFor="dueDate">Vencimiento</label>
-                <input
-                    id="dueDate"
-                    name="dueDate"
-                    type="date"
-                    value={formData.dueDate}
-                    onChange={handleChange}
-                />
+                <label htmlFor="transactionDay">Fecha del movimiento</label>
+
+                <div className="d-flex fd-row g-0_5rem flex-1">
+                    <select
+                        aria-label="Día"
+                        className="w-35px"
+                        id="transactionDay"
+                        value={
+                            formData.transactionDate
+                                ? Number(formData.transactionDate.slice(8, 10))
+                                : ""
+                        }
+                        onChange={(event) => {
+                            const day = event.target.value;
+                            const [, month = "01"] =
+                                formData.transactionDate.split("-");
+
+                            setFormData((current) => ({
+                                ...current,
+                                transactionDate: day
+                                    ? `${selectedYear}-${month}-${day.padStart(2, "0")}`
+                                    : "",
+                                }));
+                            }}
+                            
+                    >
+                        <option value="">D</option>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                            <option key={day} value={day}>
+                                {day}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        aria-label="Mes"
+                        className="w-35px"
+                        id="transactionMonth"
+                        value={
+                            formData.transactionDate
+                                ? Number(formData.transactionDate.slice(5, 7))
+                                : ""
+                        }
+                        onChange={(event) => {
+                            const month = event.target.value;
+                            const day = formData.transactionDate
+                                ? formData.transactionDate.slice(8, 10)
+                                : "";
+
+                            setFormData((current) => ({
+                                ...current,
+                                transactionDate: day && month
+                                    ? `${selectedYear}-${month.padStart(2, "0")}-${day}`
+                                    : "",
+                            }));
+                        }}
+                    >
+                        <option value="">M</option>
+
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                            <option key={month} value={month}>
+                                {month}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select
+                        aria-label="Año"
+                        id="transactionYear"
+                        value={selectedYear}
+                        onChange={(event) => {
+                            const year = Number(event.target.value);
+                            setSelectedYear(year);
+
+                            if (formData.transactionDate) {
+                                const [, month, day] =
+                                    formData.transactionDate.split("-");
+
+                                setFormData((current) => ({
+                                    ...current,
+                                    transactionDate: `${year}-${month}-${day}`,
+                                }));
+                            }
+                        }}
+                    >
+                        {Array.from({ length: 11 }, (_, i) => 2026 - 5 + i).map(
+                            (year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            )
+                        )}
+                    </select>
+                </div>
             </div>
+
+
+            <div className="d-flex fd-row w-100 jc-between ai-center">
+                <label htmlFor="dueDay">Vencimiento</label>
+
+                <div className="d-flex fd-row g-0_5rem flex-1">
+                    <select
+                        aria-label="Día de vencimiento"
+                        className="w-35px"
+                        id="dueDay"
+                        value={formData.dueDate ? Number(formData.dueDate.slice(8, 10)) : ""}
+                        onChange={(event) => {
+                            const day = event.target.value;
+                            const [, month = "01"] = (formData.dueDate || "").split("-");
+
+                            setFormData((current) => ({
+                                ...current,
+                                dueDate: day
+                                    ? `${dueYear}-${month}-${day.padStart(2, "0")}`
+                                    : "",
+                            }));
+                        }}
+                    >
+                        <option value="">D</option>
+                        {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                            <option key={day} value={day}>{day}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        aria-label="Mes de vencimiento"
+                        id="dueMonth"
+                        className="w-35px" 
+                        value={formData.dueDate ? Number(formData.dueDate.slice(5, 7)) : ""}
+                        onChange={(event) => {
+                            const month = event.target.value;
+                            const day = formData.dueDate?.slice(8, 10);
+
+                            setFormData((current) => ({
+                                ...current,
+                                dueDate: day && month
+                                    ? `${dueYear}-${month.padStart(2, "0")}-${day}`
+                                    : "",
+                            }));
+                        }}
+                    >
+                        <option value="">M</option>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                            <option key={month} value={month}>{month}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        aria-label="Año de vencimiento"
+                        id="dueYear"
+                        value={dueYear}
+                        onChange={(event) => {
+                            const year = Number(event.target.value);
+                            setDueYear(year);
+
+                            if (formData.dueDate) {
+                                const [, month, day] = formData.dueDate.split("-");
+
+                                setFormData((current) => ({
+                                    ...current,
+                                    dueDate: `${year}-${month}-${day}`,
+                                }));
+                            }
+                        }}
+                    >
+                        {Array.from({ length: 11 }, (_, i) => 2026 - 5 + i).map((year) => (
+                            <option key={year} value={year}>{year}</option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+
             <div className="d-flex fd-row w-100 jc-between ai-center">
                 <label htmlFor="category">Categoría</label>
                 <select
