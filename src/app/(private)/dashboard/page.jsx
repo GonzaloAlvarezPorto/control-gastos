@@ -54,6 +54,39 @@ export default function DashboardPage() {
         ),
     ].sort((a, b) => a.localeCompare(b, "es"));
 
+    function handleDescriptionChange(description) {
+        setFormData((current) => {
+            if (editingId || description === "Otro") {
+                return {
+                    ...current,
+                    description,
+                    customDescription: "",
+                };
+            }
+
+            const previousTransaction = transactions
+                .filter(
+                    (transaction) =>
+                        transaction.description?.trim().toLowerCase() ===
+                        description.trim().toLowerCase()
+                )
+                .sort(
+                    (a, b) =>
+                        new Date(b.createdAt) - new Date(a.createdAt)
+                )[0];
+
+            return {
+                ...current,
+                description,
+                customDescription: "",
+                ...(previousTransaction && {
+                    category: previousTransaction.category,
+                    type: previousTransaction.type,
+                }),
+            };
+        });
+    }
+
     useEffect(() => {
         if (showForm && editingId) {
             formRef.current?.scrollIntoView({
@@ -179,6 +212,7 @@ export default function DashboardPage() {
                             onSubmit={handleSubmit}
                             onCancel={handleCancelForm}
                             descriptions={descriptions}
+                            onDescriptionChange={handleDescriptionChange}
                         />
                     </div>
                 )}

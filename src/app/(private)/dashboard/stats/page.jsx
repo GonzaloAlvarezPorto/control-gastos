@@ -15,8 +15,9 @@ export default function StatsPage() {
     const [searchDescription, setSearchDescription] = useState("");
 
     const filteredTransactions = transactions.filter((transaction) => {
-        if (!transaction.transactionDate) return false;
-        if (transaction.type !== type) return false;
+    if (!transaction.transactionDate) return false;
+    if (transaction.type !== type) return false;
+    if (transaction.paymentMethod !== "Electrónico") return false;
 
         if (selectedMonth !== "all") {
             const transactionDate = new Date(transaction.transactionDate);
